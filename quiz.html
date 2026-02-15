@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dangerous Crossing Adventure</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Quicksand:wght@400;700&display=swap" rel="stylesheet">
+
+<style>
+body{
+    font-family:'Quicksand',sans-serif;
+    background:radial-gradient(circle at center,#4c51bf 0%, #2d3748 100%);
+    color:white;
+    height:100vh;
+    margin:0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+.card{
+    background:rgba(255,255,255,.15);
+    backdrop-filter:blur(15px);
+    border-radius:2rem;
+    padding:30px;
+}
+.btn-magic{
+    background:linear-gradient(45deg,#ed64a6,#9f7aea,#667eea);
+    padding:14px 24px;
+    border-radius:14px;
+    font-weight:bold;
+}
+.option-btn{
+    background:rgba(255,255,255,.1);
+    border:2px solid rgba(255,255,255,.2);
+    padding:14px;
+    border-radius:12px;
+}
+.option-btn:hover{background:rgba(79,209,197,.3);}
+.hidden-screen{display:none;}
+</style>
+</head>
+
+<body>
+
+<!-- START -->
+<div id="start-screen" class="card text-center w-full max-w-md">
+    <h1 class="text-4xl font-bold mb-3">🌉 Dangerous Crossing</h1>
+    <p class="mb-5 text-cyan-200">Grade 5 Story Adventure</p>
+    <input id="player-name" placeholder="Enter your name..."
+        class="w-full p-3 rounded text-purple-900 font-bold mb-4">
+    <button onclick="startGame()" class="btn-magic w-full">Start Quiz!</button>
+</div>
+
+<!-- GAME -->
+<div id="game-screen" class="hidden-screen card w-full max-w-2xl">
+    <div class="flex justify-between mb-4">
+        <span id="display-name"></span>
+        <span>⭐ <span id="star-count">0</span></span>
+    </div>
+
+    <div id="question-container"></div>
+    <div id="feedback" class="mt-4 font-bold"></div>
+</div>
+
+<!-- END -->
+<div id="end-screen" class="hidden-screen card text-center w-full max-w-xl">
+    <h2 class="text-3xl mb-4">🏆 Story Master Certificate</h2>
+    <p>This award is given to</p>
+    <h3 id="cert-name" class="text-4xl my-4 text-cyan-300"></h3>
+    <p>For understanding the story <strong>Dangerous Crossing</strong>!</p>
+    <p class="mt-3">Stars Earned: ⭐ <span id="cert-stars"></span></p>
+    <button onclick="location.reload()" class="btn-magic mt-6">Play Again</button>
+</div>
+
+<script>
+let playerName="";
+let currentQuestion=0;
+let stars=0;
+
+const questions=[
+{
+ type:'mcq',
+ question:"Why was the crossing dangerous in the story?",
+ options:["It was crowded","It had strong water/current","It was too dark","It was very long"],
+ answer:"It had strong water/current"
+},
+{
+ type:'mcq',
+ question:"How did the main character feel at first?",
+ options:["Excited","Scared","Angry","Sleepy"],
+ answer:"Scared"
+},
+{
+ type:'mcq',
+ question:"What helped the character cross safely?",
+ options:["Running fast","Help from others","Magic","Ignoring warnings"],
+ answer:"Help from others"
+},
+{
+ type:'identify',
+ question:"Click the word that describes a feeling:",
+ sentence:"The boy felt nervous before crossing.",
+ answer:"nervous"
+},
+{
+ type:'mcq',
+ question:"What lesson does the story teach?",
+ options:[
+   "Always rush",
+   "Bravery and teamwork help overcome danger",
+   "Never listen to others",
+   "Danger is fun"
+ ],
+ answer:"Bravery and teamwork help overcome danger"
+},
+{
+ type:'sorting',
+ question:"Sort: Character Actions vs Feelings",
+ words:[
+   {text:"Crossing carefully",type:"action"},
+   {text:"Fear",type:"feeling"},
+   {text:"Helping a friend",type:"action"},
+   {text:"Relief",type:"feeling"}
+ ]
+},
+{
+ type:'mcq',
+ question:"What happened at the end of the story?",
+ options:[
+   "The crossing failed",
+   "The character stayed behind",
+   "They crossed safely and learned a lesson",
+   "The bridge broke"
+ ],
+ answer:"They crossed safely and learned a lesson"
+},
+{
+ type:'mcq',
+ question:"Which word best describes the main character?",
+ options:["Careless","Brave","Lazy","Mean"],
+ answer:"Brave"
+},
+{
+ type:'mcq',
+ question:"Why is listening to warnings important?",
+ options:[
+   "It wastes time",
+   "It helps avoid danger",
+   "It makes stories longer",
+   "It is boring"
+ ],
+ answer:"It helps avoid danger"
+},
+{
+ type:'mcq',
+ question:"True or False: The story shows that working together is helpful.",
+ options:["True","False"],
+ answer:"True"
+}
+];
+
+function startGame(){
+    const input=document.getElementById("player-name");
+    if(!input.value.trim()) return;
+    playerName=input.value;
+
+    document.getElementById("start-screen").classList.add("hidden-screen");
+    document.getElementById("game-screen").classList.remove("hidden-screen");
+    document.getElementById("display-name").innerText=playerName;
+    loadQuestion();
+}
+
+function loadQuestion(){
+    const q=questions[currentQuestion];
+    const container=document.getElementById("question-container");
+    container.innerHTML=`<h2 class='text-2xl mb-4'>${q.question}</h2>`;
+    document.getElementById("feedback").innerText="";
+
+    if(q.type==="mcq"){
+        const grid=document.createElement("div");
+        grid.className="grid grid-cols-2 gap-3";
+        q.options.forEach(opt=>{
+            const btn=document.createElement("button");
+            btn.className="option-btn";
+            btn.innerText=opt;
+            btn.onclick=()=>checkAnswer(opt);
+            grid.appendChild(btn);
+        });
+        container.appendChild(grid);
+    }
+
+    if(q.type==="identify"){
+        q.sentence.split(" ").forEach(word=>{
+            const b=document.createElement("button");
+            b.className="option-btn m-1";
+            b.innerText=word;
+            b.onclick=()=>checkAnswer(word.replace(/[^\w]/g,''));
+            container.appendChild(b);
+        });
+    }
+
+    if(q.type==="sorting"){
+        container.innerHTML += "<p class='mb-3'>Click each item to sort (simplified mode).</p>";
+        q.words.forEach(w=>{
+            const btn=document.createElement("button");
+            btn.className="option-btn m-2";
+            btn.innerText=`${w.text} (${w.type})`;
+            btn.onclick=()=>checkAnswer(true);
+            container.appendChild(btn);
+        });
+    }
+}
+
+function checkAnswer(ans){
+    const q=questions[currentQuestion];
+    let correct=false;
+
+    if(q.type==="sorting") correct=true;
+    else correct=ans.toLowerCase()===q.answer.toLowerCase();
+
+    if(correct){
+        stars++;
+        document.getElementById("star-count").innerText=stars;
+        document.getElementById("feedback").innerText="✨ Correct!";
+        setTimeout(nextQuestion,800);
+    }else{
+        document.getElementById("feedback").innerText="❌ Try again!";
+    }
+}
+
+function nextQuestion(){
+    currentQuestion++;
+    if(currentQuestion<questions.length){
+        loadQuestion();
+    }else{
+        endGame();
+    }
+}
+
+function endGame(){
+    document.getElementById("game-screen").classList.add("hidden-screen");
+    document.getElementById("end-screen").classList.remove("hidden-screen");
+    document.getElementById("cert-name").innerText=playerName;
+    document.getElementById("cert-stars").innerText=stars;
+}
+</script>
+
+</body>
+</html>
