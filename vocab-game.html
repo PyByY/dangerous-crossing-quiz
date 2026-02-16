@@ -3,120 +3,288 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dangerous Crossing Vocabulary</title>
+<title>Dangerous Crossing Vocabulary Challenge</title>
 <script src="https://cdn.tailwindcss.com"></script>
+
 <style>
 body{
-    background:#1f2937;
-    color:white;
+    margin:0;
     font-family:sans-serif;
+    background:linear-gradient(135deg,#1e3a8a,#111827);
+    color:white;
     display:flex;
     justify-content:center;
     align-items:center;
     height:100vh;
 }
 .card{
-    background:rgba(255,255,255,.08);
+    background:rgba(255,255,255,.1);
+    backdrop-filter:blur(10px);
     padding:30px;
-    border-radius:18px;
+    border-radius:20px;
     width:90%;
-    max-width:650px;
+    max-width:750px;
 }
 .option{
-    background:#374151;
+    display:block;
+    width:100%;
+    margin:6px 0;
     padding:12px;
     border-radius:10px;
-    margin:6px 0;
+    background:rgba(255,255,255,.15);
 }
-.option:hover{background:#4b5563;}
+.option:hover{
+    background:rgba(99,102,241,.5);
+}
 .hidden{display:none;}
+
+.btn{
+    background:linear-gradient(45deg,#9333ea,#6366f1);
+    padding:12px 20px;
+    border-radius:12px;
+    font-weight:bold;
+}
+
+/* CERTIFICATE LOOK */
+#certificate{
+    background:white;
+    color:black;
+    border:12px solid #d4af37;
+    padding:40px;
+    border-radius:12px;
+    box-shadow:0 0 20px rgba(0,0,0,.3);
+}
+
+.cert-title{
+    font-size:2rem;
+    font-weight:bold;
+    color:#1e3a8a;
+}
+
+/* PRINT MODE */
+@media print{
+    body * { visibility:hidden; }
+
+    #certificate, #certificate * {
+        visibility:visible;
+    }
+
+    #certificate{
+        position:absolute;
+        left:0;
+        top:0;
+        width:100%;
+        margin:0;
+        box-shadow:none;
+    }
+}
 </style>
 </head>
 
 <body>
 
+<!-- GAME -->
 <div id="game" class="card">
-    <h1 class="text-2xl mb-4">📚 Vocabulary Challenge</h1>
-    <div id="box"></div>
+    <div class="flex justify-between mb-4">
+        <h1 class="text-2xl">📚 Vocabulary Challenge</h1>
+        <span>⭐ <span id="score">0</span></span>
+    </div>
+
+    <div id="questionBox"></div>
     <p id="msg" class="mt-3 font-bold"></p>
 </div>
 
+<!-- CERTIFICATE -->
 <div id="end" class="card hidden text-center">
-    <h2 class="text-2xl mb-2">🎉 Great Job!</h2>
-    <p>You finished the vocabulary challenge!</p>
-    <button onclick="location.reload()" class="bg-indigo-500 px-4 py-2 rounded mt-4">Play Again</button>
+    <h2 class="text-2xl mb-4">🏆 Vocabulary Certificate</h2>
+
+    <div id="certificate">
+        <p class="cert-title">Certificate of Achievement</p>
+
+        <p class="mt-4">This certificate is proudly awarded to</p>
+        <h2 id="cert-name" class="text-4xl my-4 text-purple-700 font-bold"></h2>
+
+        <p>For successfully completing the</p>
+        <p class="font-bold">Dangerous Crossing Vocabulary Challenge</p>
+
+        <p class="mt-3">Final Score: ⭐ <span id="cert-score"></span></p>
+        <p>Date: <span id="cert-date"></span></p>
+
+        <hr class="my-6">
+
+        <p style="font-size:14px;color:#555;">
+            Made by Youssof from EIS School
+        </p>
+    </div>
+
+    <div class="mt-5">
+        <button onclick="printCert()" class="btn mr-2">🖨️ Print Certificate</button>
+        <button onclick="location.reload()" class="btn">Play Again</button>
+    </div>
 </div>
 
 <script>
 let index=0;
+let score=0;
+let playerName="Student";
 
+/* VOCAB LIST YOU PROVIDED */
 const vocab=[
 {
-word:"current",
-options:["A strong flow of water","A type of bridge","A loud noise","A feeling"],
-answer:"A strong flow of water"
+word:"SURVEYED",
+answer:"Looked over something carefully; examined",
+wrong:[
+"Moved quickly without looking",
+"Felt very tired",
+"Argued loudly"
+]
 },
 {
-word:"nervous",
-options:["Very calm","Feeling worried or scared","Very angry","Very tired"],
-answer:"Feeling worried or scared"
+word:"DISTRACTED",
+answer:"Having attention drawn away; unable to concentrate",
+wrong:[
+"Very focused",
+"Feeling proud",
+"Working together"
+]
 },
 {
-word:"cautious",
-options:["Careful and safe","Fast and risky","Happy","Sleepy"],
-answer:"Careful and safe"
+word:"EMBARK",
+answer:"To set out on an adventure; to begin a journey",
+wrong:[
+"To stop moving",
+"To sleep",
+"To return home"
+]
 },
 {
-word:"relief",
-options:["Feeling safe after fear","Getting wetter","Running fast","Feeling confused"],
-answer:"Feeling safe after fear"
+word:"BRACING",
+answer:"Securing or strengthening; making firm",
+wrong:[
+"Making something weaker",
+"Cleaning something",
+"Talking quietly"
+]
 },
 {
-word:"teamwork",
-options:["Working together","Working alone","Giving up","Arguing"],
-answer:"Working together"
+word:"SHATTERED",
+answer:"Smashed; broke into pieces",
+wrong:[
+"Carefully fixed",
+"Hidden away",
+"Soft and smooth"
+]
 },
 {
-word:"danger",
-options:["Something risky or unsafe","Something fun","A reward","A celebration"],
-answer:"Something risky or unsafe"
+word:"CRAMPED",
+answer:"Crowded; not having enough space",
+wrong:[
+"Very open and large",
+"Peaceful and quiet",
+"Bright and colorful"
+]
+},
+{
+word:"PRESSING",
+answer:"Urgent; needing immediate attention",
+wrong:[
+"Not important",
+"Funny",
+"Very slow"
+]
+},
+{
+word:"VIEWPOINT",
+answer:"The way someone thinks about things; a perspective",
+wrong:[
+"A type of boat",
+"A loud sound",
+"A piece of clothing"
+]
+},
+{
+word:"REPRESENTATIVES",
+answer:"People who act or speak for others; delegates",
+wrong:[
+"Passengers who hide",
+"Workers who leave",
+"People who travel alone"
+]
+},
+{
+word:"CONDUCT",
+answer:"Behavior; the way something is organized and carried out",
+wrong:[
+"A strong wind",
+"A type of food",
+"A small room"
+]
 }
 ];
 
-function load(){
+/* shuffle helper */
+function shuffle(arr){
+    return arr.sort(()=>Math.random()-0.5);
+}
+
+function loadQuestion(){
     const v=vocab[index];
-    const box=document.getElementById("box");
-    box.innerHTML=`<h2 class="text-xl mb-3">What does <b>${v.word}</b> mean?</h2>`;
+    const box=document.getElementById("questionBox");
     document.getElementById("msg").innerText="";
-    
-    v.options.forEach(o=>{
+
+    box.innerHTML=`<h2 class="text-xl mb-3">What does <b>${v.word}</b> mean?</h2>`;
+
+    const options=shuffle([v.answer,...v.wrong]);
+
+    options.forEach(opt=>{
         const b=document.createElement("button");
-        b.className="option w-full";
-        b.innerText=o;
-        b.onclick=()=>check(o);
+        b.className="option";
+        b.innerText=opt;
+        b.onclick=()=>checkAnswer(opt);
         box.appendChild(b);
     });
 }
 
-function check(ans){
-    if(ans===vocab[index].answer){
+function checkAnswer(ans){
+    const v=vocab[index];
+
+    if(ans===v.answer){
+        score++;
         document.getElementById("msg").innerText="✅ Correct!";
-        setTimeout(()=>{
-            index++;
-            if(index<vocab.length) load();
-            else finish();
-        },600);
     }else{
-        document.getElementById("msg").innerText="❌ Try again!";
+        score--;
+        document.getElementById("msg").innerText="❌ Wrong (-1 point)";
     }
+
+    document.getElementById("score").innerText=score;
+
+    setTimeout(()=>{
+        index++;
+        if(index<vocab.length){
+            loadQuestion();
+        }else{
+            endGame();
+        }
+    },700);
 }
 
-function finish(){
+function endGame(){
     document.getElementById("game").classList.add("hidden");
     document.getElementById("end").classList.remove("hidden");
+
+    document.getElementById("cert-name").innerText=playerName;
+    document.getElementById("cert-score").innerText=score;
+
+    const today=new Date();
+    document.getElementById("cert-date").innerText=
+        today.toLocaleDateString();
 }
 
-load();
+function printCert(){
+    window.print();
+}
+
+loadQuestion();
 </script>
 
 </body>
