@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dangerous Crossing - Story Quiz</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+body{
+    font-family:sans-serif;
+    background:linear-gradient(135deg,#4c51bf,#2d3748);
+    color:white;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+    margin:0;
+}
+.card{
+    background:rgba(255,255,255,.1);
+    padding:30px;
+    border-radius:20px;
+    width:90%;
+    max-width:700px;
+}
+.btn{
+    background:#6b46c1;
+    padding:12px;
+    border-radius:12px;
+}
+.option{
+    background:rgba(255,255,255,.15);
+    padding:12px;
+    border-radius:10px;
+    margin:6px 0;
+}
+.option:hover{background:rgba(99,102,241,.4);}
+.hidden{display:none;}
+</style>
+</head>
+
+<body>
+
+<div id="start" class="card text-center">
+    <h1 class="text-3xl mb-3">🌉 Dangerous Crossing</h1>
+    <p class="mb-4">Grade 5 Story Quiz</p>
+    <input id="name" class="p-2 rounded text-black w-full mb-3" placeholder="Enter your name">
+    <button onclick="startGame()" class="btn w-full">Start</button>
+</div>
+
+<div id="game" class="card hidden">
+    <div class="flex justify-between mb-4">
+        <span id="player"></span>
+        <span>⭐ <span id="stars">0</span></span>
+    </div>
+    <div id="questionBox"></div>
+    <p id="feedback" class="mt-3 font-bold"></p>
+</div>
+
+<div id="end" class="card hidden text-center">
+    <h2 class="text-2xl mb-2">🏆 Story Master!</h2>
+    <p id="finalText"></p>
+    <button onclick="location.reload()" class="btn mt-4">Play Again</button>
+</div>
+
+<script>
+let i=0, score=0, playerName="";
+
+const questions=[
+{
+question:"Why did the crossing become dangerous?",
+options:[
+"The path was muddy and unstable",
+"The river current was strong",
+"There were too many animals",
+"It became night suddenly"
+],
+answer:"The river current was strong"
+},
+{
+question:"What was the main character worried about before crossing?",
+options:[
+"Getting lost",
+"Failing in front of others",
+"Falling into the water",
+"Losing their bag"
+],
+answer:"Falling into the water"
+},
+{
+question:"How did teamwork help in the story?",
+options:[
+"They raced each other",
+"They formed a safe line and helped one another",
+"They ignored the danger together",
+"They shouted loudly"
+],
+answer:"They formed a safe line and helped one another"
+},
+{
+question:"What does the character learn after crossing?",
+options:[
+"Bravery means ignoring danger",
+"Listening and cooperating keeps everyone safe",
+"Danger should always be avoided",
+"Only strong people succeed"
+],
+answer:"Listening and cooperating keeps everyone safe"
+},
+{
+question:"Which action showed bravery?",
+options:[
+"Running alone across",
+"Waiting and listening to advice",
+"Refusing to move",
+"Blaming others"
+],
+answer:"Waiting and listening to advice"
+},
+{
+question:"What feeling best describes the ending of the story?",
+options:["Fear","Relief","Anger","Confusion"],
+answer:"Relief"
+}
+];
+
+function startGame(){
+    const n=document.getElementById("name").value.trim();
+    if(!n) return;
+    playerName=n;
+    document.getElementById("start").classList.add("hidden");
+    document.getElementById("game").classList.remove("hidden");
+    document.getElementById("player").innerText=playerName;
+    loadQ();
+}
+
+function loadQ(){
+    const q=questions[i];
+    const box=document.getElementById("questionBox");
+    box.innerHTML=`<h2 class="text-xl mb-3">${q.question}</h2>`;
+    document.getElementById("feedback").innerText="";
+    
+    q.options.forEach(opt=>{
+        const b=document.createElement("button");
+        b.className="option w-full";
+        b.innerText=opt;
+        b.onclick=()=>check(opt);
+        box.appendChild(b);
+    });
+}
+
+function check(ans){
+    if(ans===questions[i].answer){
+        score++;
+        document.getElementById("stars").innerText=score;
+        document.getElementById("feedback").innerText="✨ Correct!";
+        setTimeout(next,700);
+    }else{
+        document.getElementById("feedback").innerText="❌ Try again!";
+    }
+}
+
+function next(){
+    i++;
+    if(i<questions.length) loadQ();
+    else endGame();
+}
+
+function endGame(){
+    document.getElementById("game").classList.add("hidden");
+    document.getElementById("end").classList.remove("hidden");
+    document.getElementById("finalText").innerText=
+      `${playerName}, you earned ⭐ ${score} stars for understanding the story!`;
+}
+</script>
+
+</body>
+</html>
