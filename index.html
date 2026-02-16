@@ -1,4 +1,4 @@
-<!<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
 <meta charset="UTF-8">
@@ -16,16 +16,27 @@ body{
     background:linear-gradient(135deg,#4c51bf,#2d3748);
     font-family:sans-serif;
     color:white;
+    overflow:hidden;
 }
+
+/* INTRO ANIMATION */
 .card{
     background:rgba(255,255,255,.12);
-    backdrop-filter:blur(10px);
+    backdrop-filter:blur(12px);
     padding:30px;
     border-radius:20px;
     width:90%;
     max-width:500px;
     text-align:center;
+    animation:fadeIn 1s ease;
 }
+
+@keyframes fadeIn{
+    from{opacity:0;transform:translateY(20px);}
+    to{opacity:1;transform:translateY(0);}
+}
+
+/* BUTTONS */
 .choice{
     display:block;
     margin-top:12px;
@@ -35,9 +46,24 @@ body{
     text-decoration:none;
     color:white;
     font-weight:bold;
+    transition:.25s;
 }
+
 .choice:hover{
-    background:rgba(99,102,241,.5);
+    background:rgba(99,102,241,.6);
+    transform:scale(1.03);
+    box-shadow:0 0 15px rgba(99,102,241,.6);
+}
+
+/* FOOTER */
+.footer{
+    position:fixed;
+    bottom:10px;
+    left:0;
+    width:100%;
+    text-align:center;
+    font-size:13px;
+    color:rgba(255,255,255,.7);
 }
 </style>
 </head>
@@ -57,6 +83,9 @@ body{
     </a>
 </div>
 
+<div class="footer">
+    Made by Youssof Diaa from EIS School
+</div>
+
 </body>
 </html>
-
